@@ -22,6 +22,7 @@ import org.lwjgl.glfw.GLFW;
 import slimeknights.mantle.client.book.action.StringActionProcessor;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.PageData;
+import slimeknights.mantle.client.book.data.SectionData;
 import slimeknights.mantle.client.book.data.element.ItemStackData;
 import slimeknights.mantle.client.screen.book.element.BookElement;
 
@@ -58,6 +59,10 @@ public class BookScreen extends Screen {
   }
 
   private ArrowButton previousArrow, nextArrow, backArrow, indexArrow;
+
+  // Used for the book to image exporter to disable arrows and mouse input
+  public boolean drawArrows = true;
+  public boolean mouseInput = true;
 
   public final BookData book;
   @Nullable
@@ -320,9 +325,9 @@ public class BookScreen extends Screen {
   public void tick() {
     super.tick();
 
-    this.previousArrow.visible = this.page != -1;
-    this.nextArrow.visible = this.page + 1 < this.book.getFullPageCount(this.advancementCache);
-    this.backArrow.visible = this.oldPage >= -1;
+    this.previousArrow.visible = this.page != -1 && drawArrows;
+    this.nextArrow.visible = this.page + 1 < this.book.getFullPageCount(this.advancementCache) && drawArrows;
+    this.backArrow.visible = this.oldPage >= -1 && drawArrows;
 
     if (this.page == -1) {
       this.nextArrow.x = this.width / 2 + 80;
@@ -331,11 +336,37 @@ public class BookScreen extends Screen {
       this.previousArrow.x = this.width / 2 - 184;
       this.nextArrow.x = this.width / 2 + 165;
 
-      this.indexArrow.visible = this.book.findSection("index") != null && (this.page - 1) * 2 + 2 > this.book.findSection("index").getPageCount();
+      SectionData index = this.book.findSection("index", this.advancementCache);
+      this.indexArrow.visible = index != null && (this.page - 1) * 2 + 2 > index.getPageCount() && drawArrows;
     }
 
     this.previousArrow.y = this.height / 2 + 75;
     this.nextArrow.y = this.height / 2 + 75;
+  }
+
+  /** Goes to the previous page */
+  public boolean previousPage() {
+    this.page--;
+    if (this.page < -1) {
+      this.page = -1;
+      return false;
+    }
+    this.oldPage = -2;
+    this.buildPages();
+    return true;
+  }
+
+  /** Goes to the next page */
+  public boolean nextPage() {
+    this.page++;
+    int fullPageCount = this.book.getFullPageCount(this.advancementCache);
+    if (this.page >= fullPageCount) {
+      this.page = fullPageCount - 1;
+      return false;
+    }
+    this.oldPage = -2;
+    this.buildPages();
+    return true;
   }
 
   @Override
@@ -527,11 +558,21 @@ public class BookScreen extends Screen {
   }
 
   protected int getMouseX(boolean rightSide) {
-    return (int) ((Minecraft.getInstance().mouseHelper.getMouseX() * this.width / this.minecraft.getMainWindow().getFramebufferWidth() - this.leftOffset(rightSide)) / PAGE_SCALE);
+    assert this.minecraft != null;
+    if(!mouseInput) {
+      return -1;
+    }
+
+    return (int) ((this.minecraft.mouseHelper.getMouseX() * this.width / this.minecraft.getMainWindow().getFramebufferWidth() - this.leftOffset(rightSide)) / PAGE_SCALE);
   }
 
   protected int getMouseY() {
-    return (int) ((Minecraft.getInstance().mouseHelper.getMouseY() * this.height / this.minecraft.getMainWindow().getFramebufferHeight() - 1 - this.topOffset()) / PAGE_SCALE);
+    assert this.minecraft != null;
+    if(!mouseInput) {
+      return -1;
+    }
+
+    return (int) ((this.minecraft.mouseHelper.getMouseY() * this.height / this.minecraft.getMainWindow().getFramebufferHeight() - 1 - this.topOffset()) / PAGE_SCALE);
   }
 
   public int openPage(int page) {

@@ -26,6 +26,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.BookLoader;
+import slimeknights.mantle.client.book.repository.FileRepository;
 import slimeknights.mantle.client.model.FallbackModelLoader;
 import slimeknights.mantle.client.model.NBTKeyModel;
 import slimeknights.mantle.client.model.RetexturedModel;
@@ -36,6 +37,7 @@ import slimeknights.mantle.client.model.inventory.InventoryModel;
 import slimeknights.mantle.client.model.util.ColoredBlockModel;
 import slimeknights.mantle.client.model.util.MantleItemLayerModel;
 import slimeknights.mantle.client.model.util.ModelHelper;
+import slimeknights.mantle.command.client.MantleClientCommand;
 import slimeknights.mantle.data.MantleTags;
 import slimeknights.mantle.registration.RegistrationHelper;
 import slimeknights.mantle.util.OffhandCooldownTracker;
@@ -54,6 +56,9 @@ public class ClientEvents {
       ((IReloadableResourceManager)manager).addReloadListener(ModelHelper.LISTENER);
     }
     event.enqueueWork(() -> RegistrationHelper.forEachWoodType(Atlases::addWoodType));
+
+    BookLoader.registerBook(Mantle.getResource("test").toString(), new FileRepository(Mantle.getResource("books/test").toString()));
+    MantleClientCommand.init();
   }
 
   @SubscribeEvent

@@ -58,7 +58,7 @@ public class BookLoader implements ISelectiveResourceReloadListener {
   /**
    * Internal registry of all books for the purposes of the reloader, maps books to name
    */
-  private static final HashMap<String, BookData> books = new HashMap<>();
+  private static final HashMap<ResourceLocation, BookData> books = new HashMap<>();
 
   public BookLoader() {
     // Register page types
@@ -135,7 +135,7 @@ public class BookLoader implements ISelectiveResourceReloadListener {
   public static BookData registerBook(String name, boolean appendIndex, boolean appendContentTable, BookRepository... repositories) {
     BookData info = new BookData(repositories);
 
-    books.put(name.contains(":") ? name : ModLoadingContext.get().getActiveContainer().getNamespace() + ":" + name, info);
+    books.put(new ResourceLocation(name.contains(":") ? name : ModLoadingContext.get().getActiveContainer().getNamespace() + ":" + name), info);
 
     if (appendIndex) {
       info.addTransformer(BookTransformer.indexTranformer());
@@ -145,6 +145,23 @@ public class BookLoader implements ISelectiveResourceReloadListener {
     }
 
     return info;
+  }
+
+  /**
+   * Gets the instance of the given book
+   * @param id The ID of the book to retrieve
+   * @return The book object, or null if it doesn't exist
+   */
+  @Nullable
+  public static BookData getBook(ResourceLocation id) {
+    return books.getOrDefault(id, null);
+  }
+
+  /**
+   * Gets the resource location of all registered books
+   */
+  public static Iterable<ResourceLocation> getRegisteredBooks() {
+    return books.keySet();
   }
 
   /**
@@ -172,11 +189,16 @@ public class BookLoader implements ISelectiveResourceReloadListener {
     MantleNetwork.INSTANCE.network.sendToServer(new UpdateLecternPagePacket(pos, page));
   }
 
+  /** Reloads all the books, used in the command and the resource manager reloading */
+  public static void resetAllBooks() {
+    books.forEach((s, bookData) -> bookData.reset());
+  }
+
   /**
    * Reloads all the books, called when the resource manager reloads, such as when the resource pack or the language is changed
    */
   @Override
   public void onResourceManagerReload(IResourceManager resourceManager, Predicate<IResourceType> resourcePredicate) {
-    books.forEach((s, bookData) -> bookData.reset());
+    resetAllBooks();
   }
 }
