@@ -7,7 +7,6 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.player.AbstractClientPlayerEntity;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.texture.NativeImage;
 import net.minecraft.client.shader.Framebuffer;
@@ -46,7 +45,7 @@ public class BookCommand {
    * @param subCommand  Command builder
    */
   public static void register(LiteralArgumentBuilder<CommandSource> subCommand) {
-    subCommand.requires(source -> source.hasPermissionLevel(MantleCommand.PERMISSION_GAME_COMMANDS) && source.getEntity() instanceof AbstractClientPlayerEntity)
+    subCommand.requires(source -> source.hasPermissionLevel(MantleCommand.PERMISSION_GAME_COMMANDS) && source.getEntity() instanceof PlayerEntity)
       .then(Commands.literal("open")
           .then(Commands.argument("id", ResourceLocationArgument.resourceLocation()).suggests(MantleClientCommand.REGISTERED_BOOKS)
             .executes(BookCommand::openBook)))

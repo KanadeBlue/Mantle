@@ -3,10 +3,10 @@ package slimeknights.mantle.command.client;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.client.entity.player.AbstractClientPlayerEntity;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.command.arguments.ResourceLocationArgument;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import slimeknights.mantle.client.book.BookLoader;
 import slimeknights.mantle.client.book.data.BookData;
@@ -20,7 +20,7 @@ public class ClearBookCacheCommand {
    * @param subCommand  Command builder
    */
   public static void register(LiteralArgumentBuilder<CommandSource> subCommand) {
-    subCommand.requires(source -> source.getEntity() instanceof AbstractClientPlayerEntity)
+    subCommand.requires(source -> source.getEntity() instanceof PlayerEntity)
               .then(Commands.argument("id", ResourceLocationArgument.resourceLocation()).suggests(MantleClientCommand.REGISTERED_BOOKS)
                             .executes(ClearBookCacheCommand::runBook))
               .executes(ClearBookCacheCommand::runAll);
