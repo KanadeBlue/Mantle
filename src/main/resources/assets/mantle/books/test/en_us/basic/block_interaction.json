@@ -1,0 +1,9 @@
+{
+  "input": {"id": "minecraft:redstone"},
+  "block": {"id": "minecraft:cobblestone"},
+  "description": [
+    {
+      "text": "This is a block interaction recipe"
+    }
+  ]
+}

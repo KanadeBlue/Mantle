@@ -1,0 +1,27 @@
+{
+  "title": "Crafting (manually populated)",
+  "grid_size": "large",
+  "grid": [
+    [
+      {"id": "minecraft:cobblestone"},
+      {"id": "minecraft:andesite"},
+      {"id": "minecraft:cobblestone"}
+    ],
+    [
+      {"id": "minecraft:andesite"},
+      {"id": "minecraft:cobblestone"},
+      {"id": "minecraft:andesite"}
+    ],
+    [
+      {"id": "minecraft:cobblestone"},
+      {"id": "minecraft:andesite"},
+      {"id": "minecraft:cobblestone"}
+    ]
+  ],
+  "result": {"id": "minecraft:diamond"},
+  "description": [
+    {
+      "text": "This large recipe is manually populated"
+    }
+  ]
+}
