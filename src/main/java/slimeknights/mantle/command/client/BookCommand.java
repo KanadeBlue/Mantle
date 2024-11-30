@@ -87,7 +87,7 @@ public class BookCommand {
     ResourceLocation book = ResourceLocationArgument.getResourceLocation(context, "id");
     int scale = context.getArgument("scale", Integer.class);
 
-    return doExportImages(book, scale);
+    return deferExportImages(book, scale);
   }
 
   /**
@@ -98,7 +98,14 @@ public class BookCommand {
   private static int exportImages(CommandContext<CommandSource> context) {
     ResourceLocation book = ResourceLocationArgument.getResourceLocation(context, "id");
 
-    return doExportImages(book, 1);
+    return deferExportImages(book, 1);
+  }
+
+  /** Defers the image export to the client thread */
+  private static int deferExportImages(ResourceLocation book, int scale) {
+    // yes, I know this is a hack, we literally just need this to work in dev
+    Minecraft.getInstance().deferTask(() -> doExportImages(book, scale));
+    return 0;
   }
 
   /**
