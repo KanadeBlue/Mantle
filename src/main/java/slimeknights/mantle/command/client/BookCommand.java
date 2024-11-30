@@ -135,8 +135,11 @@ public class BookCommand {
       screen.drawArrows = false;
       screen.mouseInput = false;
 
-      Matrix4f matrix = Matrix4f.orthographic(width, height, 1000.0F, zFar);
-      RenderSystem.multMatrix(matrix);
+      // in 1.18+, Matrix4f#orthographic takes bounds instead of width and height
+      // rather than trying to recreate the same matrix, just clone over that method and call it
+      Matrix4f matrix = MatrixHelper.orthographic(0, width, 0, height, 1000F, zFar);
+      Minecraft.getInstance().gameRenderer.resetProjectionMatrix(matrix);
+//      RenderSystem.setProjectionMatrix(matrix);
 
 //      MatrixStack stack = RenderSystem.getModelViewStack();
 //      stack.pushPose();
